@@ -1,144 +1,15 @@
-# UNIKIE-BENCH: Benchmarking Large Multimodal Models for Key Information Extraction in Visual Documents
 
-<div align="center">
+#!/usr/bin/env bash
+set -euo pipefail
 
-[![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-orange)](https://arxiv.org/abs/XXXX.XXXXX)
-[![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-brightgreen)](https://huggingface.co/datasets/your-username/unikie)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/your-username/unikie)
+if [[ $# -lt 1 ]]; then
+  echo "USE:$0 <MODEL_NAME>"
+  exit 1
+fi
 
-</div>
-
-<p align="center">
- <a href="#-overview"> 📖 Overview </a> •
- <a href="#benchmark-results">📊 Benchmark Results</a> •
- <a href="#️-setup">⚙️ Setup</a> •
- <a href="#-data-preparation">📊 Data Preparation </a>
- <br>
- <a href="#-inference">🔧 Inference </a> •
- <a href="#-evaluation">📃 Evaluation </a> •
- <a href="#-citation">📝 Citation</a> •
- <a href="#-contact">📧 Contact</a>
-</p>
-
-## 📖 Overview
-
-**UNIKIE-BENCH** is a unified benchmark designed to rigorously evaluate the Key Information Extraction (KIE) capabilities of Large Multimodal Models (LMMs) across realistic and diverse application scenarios.
-
-![UniKIE Benchmark](./figs/main.png)
-
-## Benchmark Results
-
-🔥 **Constrained-Category**
-
-![Constrained Category Results](./figs/result-constrained-category.png)
-
-🔥 **Open-Category**
-
-![Open Category Results](./figs/result-open-category.png)
-
-
-## ⚙️ Setup
-
-**Install dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-## 📊 Data Preparation
-
-> **Note:** For detailed dataset processing instructions, please refer to [DATA_PROCESS](./DATA.md)
-
-The processed datasets will be saved in the `datasets/` directory, with each 
-folder containing:
-- `label.json` 
-- `qa.jsonl` 
-- `images/`
-
-Run after processing:
-```bash
-./scripts/download_constrained_category.sh # Constrained Category Dataset 
-
-./scripts/download_open_category.sh # Open Category Dataset 
-```
-
-## 🔧 Inference
-
-This section covers how to run inference with various models using OpenAI API.
-
-### Running Inference with OpenAI API
-
-Use the `scripts/run_openai_api.sh` script to run inference on datasets.
-
-Specify the dataset name in the script (Keep consistent with the names in the datasets folder):
-```
-DATASETS=(xxx)
-```
-and run:
-```bash
-./scripts/run_openai_api.sh <MODEL_NAME>
-```
-
-You can also run inference directly using Python:
-
-```bash
-python src/request_openai.py --dataset <DATASET_NAME> --model <MODEL_NAME> [OPTIONS]
-```
-**OPTIONS args:**
-- `--dataset`: Dataset name (e.g. "Medical-Services")
-- `--model`: Model name
-- `--jsonl`: Path to qa.jsonl file (default: `datasets/<dataset>/qa.jsonl`)
-- `--output`: Output jsonl path
-- `--api-key`: OpenAI API key
-- `--api-base`: OpenAI API base
-
-## 📃 Evaluation
-
-After running inference, evaluate the results using the evaluation script.
-
-### Using the Evaluation Script
-
-Use the `scripts/eval.sh` script to evaluate multiple models.
-
-Specify the dataset name in the script (Keep consistent with the names in the datasets folder):
-```
-DATASETS=(xxx)
-```
-and run:
-```bash
-./scripts/eval.sh <MODEL_NAME>
-```
-You can also run evaluation directly using Python:
-
-```bash
-python src/evaluate_results.py --pred <PREDICTION_FILE> --dataset <DATASET_NAME> [OPTIONS]
-```
-
-**OPTIONS args:**
-- `--pred`: Prediction result JSONL file path (output from request_openai.py)
-- `--dataset`: Dataset name (e.g. "Medical-Services")
-- `--output`: Evaluation result output JSON file path (optional, default: `<pred_file>_eval_no_consistency.json`)
-
-## 📝 Citation
-
-If you find our work to be of value and helpful to your research, please acknowledge our contributions by citing us in your publications or projects:
-
-```bibtex
-@article{unikie2026,
-  title={UNIKIE-BENCH: Benchmarking Large Multimodal Models for Key Information Extraction in Visual Documents},
-  author={...},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
-  year={2026}
-}
-```
-
-## 📄 License
-
-This dataset is provided for academic research purposes only. The code in this repository is released under the MIT License. See the LICENSE file for details.
-
-
-## 📧 Contact
-
-If you have suggestions with the UniKIE benchmark, please contact us.
-```
-bigtailwolf001@gmail.com
-```
+MODEL="$1"
+DATASETS=(Medical-Services) # datasets name
+for ds in "${DATASETS[@]}"; do
+  echo "==> Running: dataset ${ds} with model ${MODEL}"
+  python src/request_openai.py --dataset "${ds}" --model "${MODEL}" --api-key "xxxx" --api-base "xxxx"  
+done
