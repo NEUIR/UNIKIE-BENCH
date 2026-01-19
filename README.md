@@ -63,11 +63,11 @@ Run after processing:
 
 ## 🔧 Inference
 
-This section covers how to run inference with various models using OpenAI or Qwen APIs.
+This section covers how to run inference with various models using OpenAI API.
 
 ### Running Inference with OpenAI API
 
-Use the `run_openai_api.sh` script to run inference on datasets.
+Use the `scripts/run_openai_api.sh` script to run inference on datasets.
 
 Specify the dataset name in the script (Keep consistent with the names in the datasets folder):
 ```
@@ -90,32 +90,6 @@ python src/request_openai.py --dataset <DATASET_NAME> --model <MODEL_NAME> [OPTI
 - `--output`: Output jsonl path
 - `--api-key`: OpenAI API key
 - `--api-base`: OpenAI API base
----
-### Running Inference with Qwen API
-
-Use the `run_qwen_api.sh` script to run inference on datasets.
-
-Specify the dataset name in the script (Keep consistent with the names in the datasets folder):
-```
-DATASETS=(xxx)
-```
-and run:
-```bash
-bash script/run_qwen_api.sh <MODEL_NAME>
-```
-
-You can also run inference directly using Python:
-
-```bash
-python src/request_qwen.py --dataset <DATASET_NAME> --model <MODEL_NAME> [OPTIONS]
-```
-**OPTIONS args:**
-- `--dataset`: Dataset name (e.g. "Medical-Services")
-- `--model`: Model name
-- `--jsonl`: Path to qa.jsonl file (default: `datasets/<dataset>/qa.jsonl`)
-- `--output`: Output jsonl path
-- `--api-key`: DashScope API key
----
 
 ## 📃 Evaluation
 
@@ -123,8 +97,13 @@ After running inference, evaluate the results using the evaluation script.
 
 ### Using the Evaluation Script
 
-Use the `eval.sh` script to evaluate multiple models:
+Use the `scripts/eval.sh` script to evaluate multiple models.
 
+Specify the dataset name in the script (Keep consistent with the names in the datasets folder):
+```
+DATASETS=(xxx)
+```
+and run:
 ```bash
 ./scripts/eval.sh <MODEL_NAME>
 ```
@@ -135,7 +114,7 @@ python src/evaluate_results.py --pred <PREDICTION_FILE> --dataset <DATASET_NAME>
 ```
 
 **OPTIONS args:**
-- `--pred`: Prediction result JSONL file path (output from request_openai.py or request_qwen.py)
+- `--pred`: Prediction result JSONL file path (output from request_openai.py)
 - `--dataset`: Dataset name (e.g. "Medical-Services")
 - `--output`: Evaluation result output JSON file path (optional, default: `<pred_file>_eval_no_consistency.json`)
 
