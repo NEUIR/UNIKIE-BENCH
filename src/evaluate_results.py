@@ -233,7 +233,7 @@ def main():
         output_path = Path(args.output)
     else:
         pred_file = Path(args.pred)
-        eval_filename = f"{pred_file.stem}_eval_no_consistency.json"
+        eval_filename = f"{pred_file.stem}_eval.json"
         output_path = pred_file.parent / eval_filename
     
     output_path.parent.mkdir(parents=True, exist_ok=True)
