@@ -111,7 +111,7 @@ python src/evaluate_results.py [args]
 **OPTIONS args:**
 - `--pred`: Prediction result JSONL file path (output from request_openai.py)
 - `--dataset`: Dataset name (e.g. "Medical-Services")
-- `--output`: Evaluation result output JSON file path (optional, default: `<pred_file>_eval_no_consistency.json`)
+- `--output`: Evaluation result output JSON file path (optional, default: `<pred_file>_eval.json`)
 
 ## 📝 Citation
 
