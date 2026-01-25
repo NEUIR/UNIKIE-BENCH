@@ -105,7 +105,7 @@ verify_dataset "Education" "320" "files"
 verify_dataset "Postal-Label" "500" "files"
 verify_dataset "Advertisement" "71" "files"
 verify_dataset "Tax-Compliant" "987" "files"
-verify_dataset "Medical Services" "240" "files"
+verify_dataset "Medical-Services" "240" "files"
 verify_dataset "Nutrition-Label" "750" "files"
 
 echo ""
