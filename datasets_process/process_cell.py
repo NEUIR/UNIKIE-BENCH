@@ -63,42 +63,52 @@ def extract_image_filenames(label_data: Dict) -> Set[str]:
     return image_filenames
 
 
-def find_image_file(image_filename: str, search_dir: str) -> Optional[str]:
-    """Find image file in search directory"""
+def find_image_file(image_filename: str, search_dir: str, *, exact_only: bool = False) -> Optional[str]:
+    """Find image by exact name, or stem+ext / contains if not exact_only.
+    When exact_only: exact match, then stem+ext only (no contains). Handles .jpg vs .jpeg in CELL."""
     search_path = Path(search_dir)
-    
-    # Strategy 1: Exact filename match
+
+    # Strategy 1: Exact filename match (always used)
     for img_path in search_path.rglob(image_filename):
         if img_path.is_file():
             return str(img_path)
-    
-    # Strategy 2: Filename (without extension) match
+
+    # Stem + extension variants: 985.jpg <-> 985.jpeg etc. Safe (same base name only).
     image_stem = Path(image_filename).stem
     for ext in ['.jpg', '.jpeg', '.png', '.bmp']:
         for img_path in search_path.rglob(f"{image_stem}{ext}"):
             if img_path.is_file():
                 return str(img_path)
-    
-    # Strategy 3: Filename contains relationship (case-insensitive)
+
+    if exact_only:
+        return None
+
+    # Strategy 3: Filename contains (skip when exact_only to avoid img_1492->1492, test_28->28)
     image_lower = image_filename.lower()
     for img_path in search_path.rglob('*'):
         if img_path.is_file():
             if image_lower in img_path.name.lower() or img_path.name.lower() in image_lower:
                 return str(img_path)
-    
+
     return None
 
 
-def copy_images_for_category(category: str, image_filenames: Set[str], 
-                              source_dir: str, dest_images_dir: str) -> int:
-    """Copy images for a single category, return success count"""
+def copy_images_for_category(category: str, image_filenames: Set[str],
+                              source_dir: str, dest_images_dir: str, *,
+                              exact_only: bool = False) -> int:
+    """Copy images for a single category, return success count.
+
+    When exact_only=True, only copies when CELL has a file with the exact same
+    name. Use this for categories that mix CELL with other sources (e.g. Education).
+    """
     os.makedirs(dest_images_dir, exist_ok=True)
-    
+
     success_count = 0
-    
+
     for image_filename in sorted(image_filenames):
-        # Find source image file
-        source_image_path = find_image_file(image_filename, source_dir)
+        source_image_path = find_image_file(
+            image_filename, source_dir, exact_only=exact_only
+        )
         
         if not source_image_path:
             continue
@@ -136,28 +146,33 @@ def process_cell():
             return
     
     # 2. Process each category
+    # All CELL categories are multi-source; use exact_only to avoid overwrites:
+    # - Education: EPHOIE (img_*.jpg) + CELL (985–994). Loose match: img_1492 -> 1492.
+    # - Catering-Services: CORD (test_*.jpg) + CELL (1010, 1144, ...). Loose: test_28 -> 28.
+    # - Administrative: FUNSD (82200067_0069.png) + CELL. Loose: 0069 -> 69, 67 -> 67.
+    USE_EXACT_ONLY = True
+
     total_success = 0
-    
+
     for category in TARGET_CATEGORIES:
         category_dir = os.path.join(DATASETS_ROOT, category)
         label_path = os.path.join(category_dir, 'label.json')
         images_dir = os.path.join(category_dir, 'images')
-        
+
         if not os.path.exists(label_path):
             continue
-        
+
         label_data = load_label_json(label_path)
         if not label_data:
             continue
-        
-        # Extract image filenames
+
         image_filenames = extract_image_filenames(label_data)
-        
-        # Copy images
+
         success = copy_images_for_category(
-            category, image_filenames, extract_dir, images_dir
+            category, image_filenames, extract_dir, images_dir,
+            exact_only=USE_EXACT_ONLY
         )
-        
+
         total_success += success
     
     # Output result
