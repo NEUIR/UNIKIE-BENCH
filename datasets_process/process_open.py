@@ -25,7 +25,6 @@ OPEN_CATEGORIES = [
 
 def download_huggingface_dataset(repo_id: str, target_dir: str) -> Optional[str]:
     """Download dataset from HuggingFace directly to datasets directory"""
-    # Check if any category directories already exist
     existing_categories = [cat for cat in OPEN_CATEGORIES if os.path.exists(os.path.join(DATASETS_ROOT, cat))]
     if existing_categories:
         print(f"Some categories already exist: {existing_categories}")
