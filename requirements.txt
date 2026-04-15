@@ -10,3 +10,5 @@ aiofiles==25.1.0
 dashscope==1.25.2
 json_repair==0.54.2
 vllm==0.11.2
+mindee
+tqdm

@@ -113,6 +113,39 @@ python src/evaluate_results.py [args]
 - `--dataset`: Dataset name (e.g. "Medical-Services")
 - `--output`: Evaluation result output JSON file path (optional, default: `<pred_file>_eval.json`)
 
+## :scientist: Run benchmark on Mindee API
+
+- Follow all repository set-up & data preparation steps.
+- The `Commercial` dataset is split by pages, reconstruct PDFs so that Mindee API can process each file as a whole.
+
+```bash
+python src/mindee/convert_commercial_dataset.py
+```
+Other datasets don't need any additional processing.
+
+- We need to generate a Mindee compatible dataschema.json file for each file. This is the KIE schema that will be applied by the API.
+
+```bash
+python src/mindee/generate_dataschemas.py
+```
+
+- Run the Mindee API on the all the datasets:
+You need a valid Mindee API key (get one [here](https://app.mindee.com)) and a model id.
+Take any model of your organization, the dataschema defining the fields to extract will be overidden at each API call with the generated dataschemas (see step above).
+
+```bash
+python src/mindee/run_inference.py --api-key=$MINDEE_API_KEY --model-id=ANY-MODEL-ID
+```
+
+- Finally run the provided evaluation script on each dataset:
+
+```bash
+python src/evaluate_results.py --pred out/Administrative/base/predictions.jsonl --dataset Administrative
+```
+
+Alternatively you can use the `scripts/eval.sh` to evaluate all datasets at once.
+
+
 ## 📝 Citation
 
 If you find our work to be of value and helpful to your research, please acknowledge our contributions by citing us in your publications or projects:
