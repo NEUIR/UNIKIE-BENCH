@@ -27,9 +27,9 @@
 
 ## Benchmark Results
 
-🔥 **Constrained-Category**
+🔥 **Constrained-Category (with Mindee API results)**
 
-![Constrained Category Results](./figs/result-constrained-category.png)
+![Constrained Category Results](./figs/result-constrained-category-mindee.png)
 
 🔥 **Open-Category**
 
